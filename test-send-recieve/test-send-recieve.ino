@@ -31,6 +31,8 @@
 #include <Arduino.h>
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
+#include <IRrecv.h>
+#include <IRutils.h>
 
 const uint16_t kIrLed = 4;  // ESP8266 GPIO pin to use. Recommended: 4 (D2).
 
@@ -49,14 +51,35 @@ uint8_t samsungState[kSamsungAcStateLength] = {
     0x02, 0x92, 0x0F, 0x00, 0x00, 0x00, 0xF0,
     0x01, 0xE2, 0xFE, 0x71, 0x40, 0x11, 0xF0};
 
+// An IR detector/demodulator is connected to GPIO pin 14(D5 on a NodeMCU
+// board).
+// Note: GPIO 16 won't work on the ESP8266 as it does not have interrupts.
+// Note: GPIO 14 won't work on the ESP32-C3 as it causes the board to reboot.
+#ifdef ARDUINO_ESP32C3_DEV
+const uint16_t kRecvPin = 10;  // 14 on a ESP32-C3 causes a boot loop.
+#else  // ARDUINO_ESP32C3_DEV
+const uint16_t kRecvPin = 14;
+#endif  // ARDUINO_ESP32C3_DEV
+
+IRrecv irrecv(kRecvPin);
+decode_results results;
+
 void setup() {
   irsend.begin();
+  irrecv.enableIRIn();  // Start the receiver
+
 #if ESP8266
   Serial.begin(115200, SERIAL_8N1, SERIAL_TX_ONLY);
 #else  // ESP8266
   Serial.begin(115200, SERIAL_8N1);
 #endif  // ESP8266
+  while (!Serial)  // Wait for the serial connection to be establised.
+    delay(50);
+  Serial.println();
+  Serial.print("IRrecvDemo is now running and waiting for IR message on Pin ");
+  Serial.println(kRecvPin);
 }
+
 
 void loop() {
   /*Serial.println("NEC");
@@ -73,5 +96,11 @@ void loop() {
   delay(2000);*/
   Serial.println("a Lasertag Code");
   irsend.sendGeneric(2400, 600, 1200, 600, 600, 600, 0, 0, 133664, 22, 56, true, 0, 85);
+  if (irrecv.decode(&results)) {
+    // print() & println() can't handle printing long longs. (uint64_t)
+    serialPrintUint64(results.value, BIN);
+    Serial.println("");
+    irrecv.resume();  // Receive the next value
+  }
   delay(2000);
 }
