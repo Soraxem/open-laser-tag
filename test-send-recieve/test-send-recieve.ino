@@ -88,13 +88,16 @@ void loop() {
   delay(2000);*/
   Serial.println("a Lasertag Code");
   irsend.sendGeneric(2400, 600, 1200, 600, 600, 600, 0, 0, 133664, 22, 56, true, 0, 85);
+  //delay(200);
   if (irrecv.decode(&results)) {
     // print() & println() can't handle printing long longs. (uint64_t)
     serialPrintUint64(results.value, BIN);
     Serial.println("");
     irrecv.resume();  // Receive the next value
   }
-  delay(2000);
+  delay(500);
+  digitalWrite(D8, taktmerker2hz);
+}
 
 //Send a Shot. This sends a infrared packet with all lethal information
 // 0   XXXXXXX   XX   XXXX   XXXXXXXX
