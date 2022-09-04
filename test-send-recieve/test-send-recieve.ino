@@ -51,9 +51,13 @@ const uint16_t kRecvPin = 14;
 IRrecv irrecv(kRecvPin);
 decode_results results;
 
+bool taktmerker2hz = 0;
+
 void setup() {
   irsend.begin();
   irrecv.enableIRIn();  // Start the receiver
+
+  pinMode(D8, OUTPUT);
 
 #if ESP8266
   Serial.begin(115200, SERIAL_8N1, SERIAL_TX_ONLY);
@@ -69,6 +73,7 @@ void setup() {
 
 
 void loop() {
+  taktmerker2hz = (millis() / 500) % 2;
   /*Serial.println("NEC");
   irsend.sendNEC(0x00FFE01FUL);
   delay(2000);
