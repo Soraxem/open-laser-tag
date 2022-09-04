@@ -95,4 +95,11 @@ void loop() {
     irrecv.resume();  // Receive the next value
   }
   delay(2000);
+
+//Send a Shot. This sends a infrared packet with all lethal information
+// 0   XXXXXXX   XX   XXXX   XXXXXXXX
+// std Player ID Team Damage Player ID
+void send_shot() {
+
+  
 }
