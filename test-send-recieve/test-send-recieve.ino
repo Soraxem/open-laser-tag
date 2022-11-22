@@ -64,21 +64,19 @@ int offender_damage;
 bool clock2hz = 0;
 
 void setup() {
-  irsend.begin();
+  // Init Pins
+  irsend.begin(); // Start the sender
   irrecv.enableIRIn();  // Start the receiver
 
-  pinMode(D8, OUTPUT);
+  pinMode(trigger, INPUT);
+  pinMode(indicator, OUTPUT);
 
-#if ESP8266
+  // Init serial communication
   Serial.begin(115200, SERIAL_8N1, SERIAL_TX_ONLY);
-#else  // ESP8266
-  Serial.begin(115200, SERIAL_8N1);
-#endif  // ESP8266
-  while (!Serial)  // Wait for the serial connection to be establised.
+  while (!Serial)
     delay(50);
   Serial.println();
-  Serial.print("IRrecvDemo is now running and waiting for IR message on Pin ");
-  Serial.println(reciever);
+  Serial.println("Openlasertag is now running");
 }
 
 
