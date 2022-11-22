@@ -51,7 +51,7 @@ const uint16_t kRecvPin = 14;
 IRrecv irrecv(kRecvPin);
 decode_results results;
 
-bool taktmerker2hz = 0;
+bool clock2hz = 0;
 
 void setup() {
   irsend.begin();
@@ -73,7 +73,6 @@ void setup() {
 
 
 void loop() {
-  taktmerker2hz = (millis() / 500) % 2;
   /*Serial.println("NEC");
   irsend.sendNEC(0x00FFE01FUL);
   delay(2000);
@@ -86,6 +85,7 @@ void loop() {
   Serial.println("a Samsung A/C state from IRrecvDumpV2");
   irsend.sendSamsungAC(samsungState);
   delay(2000);*/
+  clock2hz = (millis() / 500) % 2;
   Serial.println("a Lasertag Code");
   irsend.sendGeneric(2400, 600, 1200, 600, 600, 600, 0, 0, 133664, 22, 56, true, 0, 85);
   //delay(200);
@@ -96,7 +96,7 @@ void loop() {
     irrecv.resume();  // Receive the next value
   }
   delay(500);
-  digitalWrite(D8, taktmerker2hz);
+  digitalWrite(D8, clock2hz);
 }
 
 //Send a Shot. This sends a infrared packet with all lethal information
