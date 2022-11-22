@@ -51,7 +51,11 @@ decode_results results;
 #define team 0b00
 #define damage 0b1101
 
-//Init variables
+// Attributes definition
+#define deathtime 20000
+#define reloadtime 4000
+
+// Init variables
 bool dead = 0;
 unsigned long int deathstamp = 0;
 bool reload = 0;
@@ -81,25 +85,43 @@ void setup() {
 
 
 void loop() {
-  clock2hz = (millis() / 500) % 2;
-  Serial.println("a Lasertag Code");
-  send_shot(player, team, damage);
-  //delay(200);
+  clock2hz = (millis() / 250) % 2;
+
+  // shoot if trigger is pulled
+  if (not(dead) and not(reload) and digitalRead(trigger)) {
+    send_shot(player, team, damage);
+    reload = 1;
+    reloadstamp = millis() + reloadtime;
+  }
+
+  // ending reload after delay
+  if (reload and (millis() >= reloadstamp)) {
+     reload = 0;
+  }
+
   // recieving a packet
   if (irrecv.decode(&results)) {
-    // print() & println() can't handle printing long longs. (uint64_t)
-    serialPrintUint64(results.value, BIN);
-    Serial.println("");
     if (decode_shot(results.value, &offender_player, &offender_team, &offender_damage) and not(dead)){
       Serial.println("Got hit by");
       Serial.println("Player: " + String(offender_player, BIN));
       Serial.println("Team: " + String(offender_team, BIN));
       Serial.println("Damage: " + String(offender_damage, BIN));
+      if (not(offender_player == player)) {
+        dead = 1;
+        deathstamp = millis() + deathtime;
+      }
     }
     irrecv.resume();  // Receive the next value
   }
-  delay(500);
-  digitalWrite(D8, clock2hz);
+
+  // ending death after delay
+  if (dead and (millis() >=deathstamp)) {
+    dead = 0;
+  }
+
+  if (dead) {
+    digitalWrite(D8, clock2hz);
+  }
 }
 
 //Send a Shot. This sends a infrared packet with all lethal information
