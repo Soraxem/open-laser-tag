@@ -103,5 +103,17 @@ void send_shot(int player_id, int team_id, int damage_id) {
   irsend.sendGeneric(2400, 600, 1200, 600, 600, 600, 0, 0, data, 14, 56, true, 0, 85);
 }
 
-  
+//Decode a Shot. This decodes a infrared packet with all lethal information
+// 0   XXXXXXX   XX   XXXX
+bool decode_shot(int data ,int *player_id, int *team_id, int *damage_id) {
+  if (not(data >= 0b10000000000000)) {
+    *damage_id = data & 0b1111;
+    data = data >> 4;
+    *team_id = data & 0b11;
+    data = data >> 2;
+    *player_id = data;
+    return true;
+  } else {
+    return false;
+  }
 }
