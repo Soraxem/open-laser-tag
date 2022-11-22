@@ -57,6 +57,10 @@ unsigned long int deathstamp = 0;
 bool reload = 0;
 unsigned long int reloadstamp = 0;
 
+int offender_player;
+int offender_team;
+int offender_damage;
+
 bool clock2hz = 0;
 
 void setup() {
@@ -83,10 +87,17 @@ void loop() {
   Serial.println("a Lasertag Code");
   send_shot(player, team, damage);
   //delay(200);
+  // recieving a packet
   if (irrecv.decode(&results)) {
     // print() & println() can't handle printing long longs. (uint64_t)
     serialPrintUint64(results.value, BIN);
     Serial.println("");
+    if (decode_shot(results.value, &offender_player, &offender_team, &offender_damage) and not(dead)){
+      Serial.println("Got hit by");
+      Serial.println("Player: " + String(offender_player, BIN));
+      Serial.println("Team: " + String(offender_team, BIN));
+      Serial.println("Damage: " + String(offender_damage, BIN));
+    }
     irrecv.resume();  // Receive the next value
   }
   delay(500);
