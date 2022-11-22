@@ -80,7 +80,7 @@ void setup() {
 void loop() {
   clock2hz = (millis() / 500) % 2;
   Serial.println("a Lasertag Code");
-  irsend.sendGeneric(2400, 600, 1200, 600, 600, 600, 0, 0, 133664, 22, 56, true, 0, 85);
+  send_shot(player, team, damage);
   //delay(200);
   if (irrecv.decode(&results)) {
     // print() & println() can't handle printing long longs. (uint64_t)
@@ -93,9 +93,15 @@ void loop() {
 }
 
 //Send a Shot. This sends a infrared packet with all lethal information
-// 0   XXXXXXX   XX   XXXX   XXXXXXXX
-// std Player ID Team Damage Player ID
-void send_shot() {
+// 0   XXXXXXX   XX   XXXX
+void send_shot(int player_id, int team_id, int damage_id) {
+  int data = player_id;
+  data = data << 2;
+  data =+ team_id;
+  data = data << 4;
+  data =+ damage_id;
+  irsend.sendGeneric(2400, 600, 1200, 600, 600, 600, 0, 0, data, 14, 56, true, 0, 85);
+}
 
   
 }
