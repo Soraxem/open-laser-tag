@@ -28,24 +28,25 @@
  *     for your first time. e.g. ESP-12 etc.
  */
 
+// Library integration
 #include <Arduino.h>
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
 #include <IRrecv.h>
 #include <IRutils.h>
 
-//Pin definition
+// Pin definition
 #define sender D2
 #define reciever D5
 #define trigger D7
 #define indicator D8
 
-//Init infrared communication
+// Init infrared communication
 IRsend irsend(sender);
 IRrecv irrecv(reciever);
 decode_results results;
 
-//Attributes definition temporary
+// Attributes definition temporary
 #define player 0b0000001
 #define team 0b00
 #define damage 0b1101
