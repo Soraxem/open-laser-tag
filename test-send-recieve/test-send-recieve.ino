@@ -78,18 +78,6 @@ void setup() {
 
 
 void loop() {
-  /*Serial.println("NEC");
-  irsend.sendNEC(0x00FFE01FUL);
-  delay(2000);
-  Serial.println("Sony");
-  irsend.sendSony(0xa90, 12, 2);  // 12 bits & 2 repeats
-  delay(2000);
-  Serial.println("a rawData capture from IRrecvDumpV2");
-  irsend.sendRaw(rawData, 67, 56);  // Send a raw data capture at 38kHz.
-  delay(2000);
-  Serial.println("a Samsung A/C state from IRrecvDumpV2");
-  irsend.sendSamsungAC(samsungState);
-  delay(2000);*/
   clock2hz = (millis() / 500) % 2;
   Serial.println("a Lasertag Code");
   irsend.sendGeneric(2400, 600, 1200, 600, 600, 600, 0, 0, 133664, 22, 56, true, 0, 85);
