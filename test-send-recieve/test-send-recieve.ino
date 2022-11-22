@@ -34,22 +34,27 @@
 #include <IRrecv.h>
 #include <IRutils.h>
 
-const uint16_t kIrLed = 4;  // ESP8266 GPIO pin to use. Recommended: 4 (D2).
+//Pin definition
+#define sender D2
+#define reciever D5
+#define trigger D7
+#define indicator D8
 
-IRsend irsend(kIrLed);  // Set the GPIO to be used to sending the message.
-
-// An IR detector/demodulator is connected to GPIO pin 14(D5 on a NodeMCU
-// board).
-// Note: GPIO 16 won't work on the ESP8266 as it does not have interrupts.
-// Note: GPIO 14 won't work on the ESP32-C3 as it causes the board to reboot.
-#ifdef ARDUINO_ESP32C3_DEV
-const uint16_t kRecvPin = 10;  // 14 on a ESP32-C3 causes a boot loop.
-#else  // ARDUINO_ESP32C3_DEV
-const uint16_t kRecvPin = 14;
-#endif  // ARDUINO_ESP32C3_DEV
-
-IRrecv irrecv(kRecvPin);
+//Init infrared communication
+IRsend irsend(sender);
+IRrecv irrecv(reciever);
 decode_results results;
+
+//Attributes definition temporary
+#define player 0b0000001
+#define team 0b00
+#define damage 0b1101
+
+//Init variables
+bool dead = 0;
+unsigned long int deathstamp = 0;
+bool reload = 0;
+unsigned long int reloadstamp = 0;
 
 bool clock2hz = 0;
 
@@ -68,7 +73,7 @@ void setup() {
     delay(50);
   Serial.println();
   Serial.print("IRrecvDemo is now running and waiting for IR message on Pin ");
-  Serial.println(kRecvPin);
+  Serial.println(reciever);
 }
 
 
